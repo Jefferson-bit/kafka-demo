@@ -1,0 +1,118 @@
+version: '3.9'
+services:
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: kafka-demo
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgresql-volume:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "test@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "12345"
+    ports:
+      - "5050:5050"
+    depends_on:
+      - postgres
+
+  # this is our kafka cluster.
+  kafka-cluster:
+    image: landoop/fast-data-dev:cp3.3.0
+    environment:
+      ADV_HOST: localhost         # Change to 192.168.99.100 if using Docker Toolbox
+      RUNTESTS: 0                 # Disable Running tests so the cluster starts faster
+      FORWARDLOGS: 0              # Disable running 5 file source connectors that bring application logs into Kafka topics
+      SAMPLEDATA: 0               # Do not create sea_vessel_position_reports, nyc_yellow_taxi_trip_data, reddit_posts topics with sample Avro records.
+    ports:
+      - 2181:2181                 # Zookeeper
+      - 3030:3030                 # Landoop UI
+      - 8081-8083:8081-8083       # REST Proxy, Schema Registry, Kafka Connect ports
+      - 9581-9585:9581-9585       # JMX Ports
+      - 9092:9092                 # Kafka Broker
+
+#  zookeeper:
+#    image: confluentinc/cp-zookeeper:latest
+#    environment:
+#      ZOOKEEPER_CLIENT_PORT: 2181
+#      ZOOKEEPER_TICK_TIME: 2000
+#    ports:
+#      - "2181:2181"
+#    networks:
+#      - kafka-demo
+#  broker:
+#    image: confluentinc/cp-kafka:latest
+#    hostname: broker
+#    container_name: broker
+#    depends_on:
+#      - zookeeper
+#    ports:
+#      - "29092:29092"
+#    environment:
+#      KAFKA_BROKER_ID: 1
+#      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092,PLAINTEXT_HOST://localhost:29092
+#      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+#      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#    networks:
+#      - kafka-demo
+#
+#  schema_registry:
+#    image: confluentinc/cp-schema-registry:6.1.0
+#    hostname: schema_registry
+#    container_name: schema_registry
+#    environment:
+#      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
+#      SCHEMA_REGISTRY_HOST_NAME: schema_registry
+#    ports:
+#      - "8085:8085"
+#    depends_on:
+#      - zookeeper
+#      - broker
+#    networks:
+#      - kafka-demo
+#
+#
+#  kafka-setup:
+#    image: confluentinc/cp-server:latest
+#    hostname: kafka-setup
+#    container_name: kafka-setup
+#    environment:
+#      KAFKA_BROKER_ID: ignored
+#      KAFKA_ZOOKEPER_CONNECT: ignored
+#    depends_on:
+#      - zookeeper
+#      - broker
+#    command: "bash -c 'echo aguardando broker do kafka iniciar... && \
+#      cub kafka-ready -b broker:9092 1 80 && \
+#      kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 3 \
+#      --replication-factor 1 --topic kafka-demo
+#      --config confluent.value.subject.name.strategy=io.confluent.kafka.serializers.subject.TopicRecordNameStrategy \
+#      --config confluent.key.subject.name.strategy= io.confluent.kafka.serializers.subject.TopicRecordNameStrategy '"
+#    networks:
+#      - kafka-demo
+#
+#  kafdrop:
+#    image: obsidiandynamics/kafdrop
+#    ports:
+#      - "9000:9000"
+#    environment:
+#      KAFKA_BROKERCONNECT: "broker:9092"
+#      JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+#    depends_on:
+#      - "kafka-setup"
+#      - "broker"
+#    networks:
+#      - kafka-demo
+#networks:
+#  kafka-demo:
+#    driver: bridge
+
+volumes:
+  postgresql-volume:

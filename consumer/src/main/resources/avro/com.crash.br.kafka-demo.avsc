@@ -1,0 +1,35 @@
+{
+  "type": "record",
+  "name": "Cliente",
+  "namespace": "com.crash.br.kafka.demo",
+  "fields": [
+    {"name": "nome", "type": "string"},
+    {"name": "sobre_nome", "type": "string"},
+    {"name": "idade", "type": "int"},
+    {"name": "data_de_nascimento", "type": "string"},
+    {"name": "cpf", "type": "string"},
+    {"name": "conta_bancaria", "type": {
+      "type": "record",
+      "name": "ContaBancaria",
+      "fields": [
+        {"name": "agencia", "type": "int"},
+        {"name": "numero_da_conta", "type": "int"}
+      ]
+    }
+    },
+    {"name": "endereco", "type": {
+      "type": "record",
+      "name":"Endereco",
+      "fields":[
+        {"name":"rua", "type":"string"},
+        {"name":"bairro", "type":"string"},
+        {"name":"cidade", "type":"string"},
+        {"name":"estado", "type":"string"},
+        {"name":"cep", "type":"string"},
+        {"name":"numero_da_casa", "type":["null","int"]},
+        {"name":"telefone", "type":"int"}
+      ]
+      }
+    }
+  ]
+}
