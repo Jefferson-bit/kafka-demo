@@ -30,7 +30,7 @@ public class EnderecoEntity {
     private Integer telefone;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "endereco", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "endereco", fetch = FetchType.LAZY)
     private List<ClienteEntity> cliente = new ArrayList<>();
 
     @Deprecated

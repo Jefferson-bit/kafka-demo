@@ -27,10 +27,10 @@ public class ClienteEntity {
     private LocalDate dataDeNascimento;
 
     @JoinColumn(name = "conta_bacaria_id")
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     private ContaBancariaEntity contaBancaria;
     @JoinColumn(name = "endereco_id")
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private EnderecoEntity endereco;
 
     @Deprecated
