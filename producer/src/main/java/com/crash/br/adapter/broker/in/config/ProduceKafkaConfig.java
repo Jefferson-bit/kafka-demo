@@ -30,6 +30,18 @@ public class ProduceKafkaConfig {
         return new DefaultKafkaProducerFactory<>(configs);
     }
 
+    public ProducerFactory<String, Cliente> producerIdempotence() {
+        var configs = new HashMap<String, Object>();
+        configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapservers);
+        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroSerializer");
+        configs.put(ProducerConfig.ACKS_CONFIG, "all");
+        configs.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+        configs.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
+        configs.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081");
+        return new DefaultKafkaProducerFactory<>(configs);
+    }
+
     @Bean
     public KafkaTemplate<String, Cliente> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
