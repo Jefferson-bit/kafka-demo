@@ -4,6 +4,7 @@ package com.crash.br.kafka;
 import com.crash.br.kafka.demo.Cliente;
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -18,7 +19,6 @@ import org.springframework.kafka.support.converter.BatchMessagingMessageConverte
 import org.springframework.kafka.support.converter.JsonMessageConverter;
 
 import java.util.HashMap;
-
 
 @EnableKafka
 @Configuration
@@ -41,7 +41,6 @@ public class KafkaConfiguration {
         configs.put(ConsumerConfig.CLIENT_ID_CONFIG, "group-1");
         configs.put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, "true");
         configs.put("schema.registry.url", "http://localhost:8081");
-
         return new DefaultKafkaConsumerFactory<>(configs);
     }
 
@@ -56,16 +55,16 @@ public class KafkaConfiguration {
     }
 
     private RecordInterceptor<String, Object> recordInterceptor() {
-        return record -> {
-            LOGGER.info("Record {}", record);
-            if (record.value() instanceof Cliente payload) {
-                System.out.println("Dentro do instance of");
-                if (payload.getIdade() >= 18) {
-                    System.out.println("Dentro da condicional");
+        System.out.println("PASSO NO RECORd?");
+        return new RecordInterceptor<String, Object>() {
+            @Override
+            public ConsumerRecord<String, Object> intercept(ConsumerRecord<String, Object> record) {
+                System.out.println("ENTRO NO RECORD?");
+                if (record.value() instanceof Cliente payload) {
                     return record;
                 }
+                return null;
             }
-            return null;
         };
 
     }

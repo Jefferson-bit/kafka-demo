@@ -25,7 +25,10 @@ public class ProduceKafkaConfig {
         configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroSerializer");
         configs.put(ProducerConfig.ACKS_CONFIG, "all");
-        configs.put(ProducerConfig.RETRIES_CONFIG, 10);
+        configs.put(ProducerConfig.BATCH_SIZE_CONFIG, "65536");
+        configs.put(ProducerConfig.LINGER_MS_CONFIG, "50");
+        configs.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "LZ4");
+        configs.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
         configs.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081");
         return new DefaultKafkaProducerFactory<>(configs);
     }
